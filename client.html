@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Client</title>
+    <script src="peerjs.min.js"></script>
+    <style type="text/css">
+        span {
+            color: red;
+        }
+
+        .noActive {
+            background-color: gray;
+        }
+
+        .active {
+            background-color: green;
+        }
+
+        .active2 {
+            background-color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <p>
+        <h3>Client ID: </h3>
+        <span id='myid' style="font-weight: bold; font-size: 30px;"></span>
+    </p>
+    <br>
+    <div id=callinfo>
+        <!--Incoming connection-->
+        <button onclick='callanswer()' id="btn" class="noActive">Connect</button>
+        <!--<button onclick='callcancel()' id="btn2" class="noActive">Decline</button>-->
+    </div>
+	 <br>
+    <video id="remVideo" min-width="1080px" controls autoplay muted="false" volume=0></video>
+    <script>
+        var peer = new Peer();
+
+        var btn = document.getElementById("btn");
+        var btn2 = document.getElementById("btn2");
+
+        function fullScreen(element) {
+            if (element.requestFullscreen) {
+                element.requestFullscreen();
+            } else if (element.webkitrequestFullscreen) {
+                element.webkitRequestFullscreen();
+            } else if (element.mozRequestFullscreen) {
+                element.mozRequestFullScreen();
+            }
+        };
+
+        peer.on('open', function (peerID) {
+            document.getElementById('myid').innerHTML = peerID;
+        });
+        var peercall;
+        peer.on('call', function (call) {
+            // Answer the call, providing our mediaStream
+            peercall = call;
+
+            //button status change
+            btn.classList.remove('noActive');
+            btn2.classList.remove('noActive');
+            btn.classList.add('active');
+            btn2.classList.add('active2');
+
+        });
+
+        function callanswer() {
+            peercall.answer(); // answer the call and exchange media
+            document.getElementById('callinfo').innerHTML =
+                "Session started... <button onclick='callclose()' >End session</button>"; //Session started
+            setTimeout(function () {
+                //fullscreen mode
+                var wind = document.getElementById('remVideo');
+                fullScreen(wind);
+                //place incoming stream as the video object 
+                document.getElementById('remVideo').srcObject = peercall.remoteStream;
+                document.getElementById('remVideo').onloadedmetadata = function (e) {
+                    //start playing when the object is loaded
+                    document.getElementById('remVideo').play();
+                };
+            }, 1500);
+        };
+    </script>
+</body>
+
+</html>

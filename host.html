@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Host</title>
+    <script src="peerjs.min.js"></script>
+</head>
+
+<body>
+    <!--<br><br>
+    <a href="/client.html" style="text-transform: uppercase; font-weight: bold;">broadcast page link</a>
+    <br>
+    <br>
+    <br>-->
+    <input id=otherPeerId type=text placeholder="ClientID"> <button
+        onclick="callToNode(document.getElementById('otherPeerId').value)">Connect</button>
+
+    <br>
+    <script>
+        var peer = new Peer();
+
+        peer.on('open', function (peerID) {
+            document.getElementById('myid').innerHTML = peerID;
+        });
+
+        function callToNode(peerId) {
+            navigator.mediaDevices.getDisplayMedia().then(function (mediaStream) {
+                peercall = peer.call(peerId, mediaStream);
+                video.srcObject = mediaStream;
+                video.onloadedmetadata = function (e) {
+                    video.play();
+                };
+            }).catch(function (err) {
+                console.log(err.name + ": " + err.message);
+            });
+        };
+    </script>
+</body>
+
+</html>
